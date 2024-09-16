@@ -1,0 +1,6 @@
+boto3
+fastapi
+fastapi-azure-auth
+unicorn
+pydantic
+fastapi_msal
