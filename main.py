@@ -4,6 +4,8 @@ from fastapi import FastAPI, Security, Depends
 from fastapi.openapi.docs import get_swagger_ui_html
 from ssm.router import router 
 from auth.dependencies import validate_is_admin_user
+from env_utils import EnvUtils
+
 logging.basicConfig(level=logging.INFO)
 
 
@@ -11,8 +13,8 @@ app = FastAPI(
     swagger_ui_oauth2_redirect_url='/oauth2-redirect',
     swagger_ui_init_oauth={
         'usePkceWithAuthorizationCodeGrant': True,
-        'clientId': '<client>',
-        'scopes': 'api://<Scope>/user_impersonation',
+        'clientId': EnvUtils.get_env_variable('AZURE_CLIENT_ID'),
+        'scopes': f'api://{EnvUtils.get_env_variable('Azure_CLIENT_SCOPE')}/user_impersonation',
     },
 )
 

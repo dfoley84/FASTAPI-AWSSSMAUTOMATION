@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from scripts.api_triggerssm import TriggerSSM
 from typing import Optional
 from enum import Enum
+from env_utils import EnvUtils
 import logging
 
 
@@ -32,18 +33,18 @@ def trigger_ssm_document(
 ):
     role = {
         "prod": {
-            "documentname" : "",
-            "sftprolearn": "",
-            "sftpserverid": "",
-            "privatekeybucketname": "",
-            "sftpbucketname": ""
+            "documentname" : EnvUtils.get_env_variable('UAT_SSM_DOCUMENT_NAME'),
+            "sftprolearn": EnvUtils.get_env_variable('UAT_SFTPROLEARN'),
+            "sftpserverid": EnvUtils.get_env_variable('UAT_SFTPSERVERID'),
+            "privatekeybucketname": EnvUtils.get_env_variable('UAT_PRIVATEKEYBUCKETNAME'),
+            "sftpbucketname": EnvUtils.get_env_variable('UAT_SFTPBUCKETNAME')
         },
         "uat": {
-            "documentname" : "",
-            "sftprolearn": "",
-            "sftpserverid": "",
-            "privatekeybucketname": "",
-            "sftpbucketname": ""
+            "documentname" :  EnvUtils.get_env_variable('PROD_SSM_DOCUMENT_NAME'),
+            "sftprolearn": EnvUtils.get_env_variable('PROD_SFTPROLEARN'),
+            "sftpserverid": EnvUtils.get_env_variable('PROD_SFTPSERVERID'),
+            "privatekeybucketname": EnvUtils.get_env_variable('PROD_PRIVATEKEYBUCKETNAME'),
+            "sftpbucketname": EnvUtils.get_env_variable('PROD_SFTPBUCKETNAME')
         }
     }
     
