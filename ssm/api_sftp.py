@@ -32,14 +32,14 @@ def trigger_ssm_document(
     clientkey: Optional[str] = Form(None, description="The Client Public Key to be imported -> Leave Blank if not available."),   
 ):
     role = {
-        "prod": {
+        "uat": {
             "documentname" : EnvUtils.get_env_variable('UAT_SSM_DOCUMENT_NAME'),
             "sftprolearn": EnvUtils.get_env_variable('UAT_SFTPROLEARN'),
             "sftpserverid": EnvUtils.get_env_variable('UAT_SFTPSERVERID'),
             "privatekeybucketname": EnvUtils.get_env_variable('UAT_PRIVATEKEYBUCKETNAME'),
             "sftpbucketname": EnvUtils.get_env_variable('UAT_SFTPBUCKETNAME')
         },
-        "uat": {
+        "prod": {
             "documentname" :  EnvUtils.get_env_variable('PROD_SSM_DOCUMENT_NAME'),
             "sftprolearn": EnvUtils.get_env_variable('PROD_SFTPROLEARN'),
             "sftpserverid": EnvUtils.get_env_variable('PROD_SFTPSERVERID'),
