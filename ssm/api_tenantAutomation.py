@@ -1,20 +1,22 @@
 from fastapi import APIRouter, HTTPException, Form, Depends
 from scripts.api_triggerssm import TriggerSSM
 from typing import Optional
-from model.baseclass import AWSEnvironmentEnum
+from model.baseclass import AWSEnvironmentEnum, AWSRegionEnum,TenantSuperUser, TenantSuperUserName
 import logging
 import boto3
 
 router = APIRouter()
 
-@router.post("/sftp/",
+@router.post("/FusionTenant/",
              response_model=dict
 )
 def trigger_ssm_document(
+    Region: AWSRegionEnum = Form(..., description="AWS Region"),
     Environment: AWSEnvironmentEnum = Form(..., description="AWS Environment"),
-    sftpclientname: str = Form(..., description="SFTP Client Username."),
-    sftpclientbucket: str = Form(..., description="The name of the S3 bucket where the SFTP client Folders are stored."),
-    clientkey: Optional[str] = Form(None, description="The Client Public Key to be imported -> Leave Blank if not available."),   
+    SuperAdmin: TenantSuperUser = Form(..., description=""),
+    SuperUserName: TenantSuperUserName = Form(..., description=""),
+    Tenantprefix: str = Form(..., description=""),
+    TenantDisplayName: str = Form(..., description="")
 ):
     role = {
         "uat": {
@@ -31,7 +33,8 @@ def trigger_ssm_document(
     env_selected = role[Environment]
 
     try:
-        ssm_client = boto3.client('ssm', region_name='eu-west-1')
+        ssm_client = boto3.client('ssm', region_name=Region)
+         #Fetch the Full Document Name From the Environment
         DocName = ssm_client.list_documents(
             DocumentFilterList=[
                 {
@@ -58,11 +61,12 @@ def trigger_ssm_document(
         
         parameters_dict = {param['Name']: param.get('DefaultValue', '') for param in parameters}
         parameters_dict = {
-            'sftpclientname': sftpclientname,
-            'sftpclientbucket': sftpclientbucket,
-            'clientkey': clientkey
-        }        
-        ssm = TriggerSSM(parameters_dict, "eu-west-1", env_selected['documentname'], env_selected)
+            'SuperAdminEmail': SuperAdmin.value,
+            'SuperAdminName': SuperUserName,
+            'Tenantprefix': Tenantprefix, 
+            'TenantDisplayName': TenantDisplayName
+        }
+        ssm = TriggerSSM(parameters_dict, Region, env_selected['documentname'], env_selected)
         response = ssm.start_automation_execution()
         return response
 

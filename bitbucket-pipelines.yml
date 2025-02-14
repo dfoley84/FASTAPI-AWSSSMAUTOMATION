@@ -1,0 +1,19 @@
+image: atlassian/default-image:4
+definitions:
+  steps:
+    - step: &DockerBuildAndPush
+        name: Docker build
+        oidc: true
+        services:
+          - docker
+        script:
+          - export TIMESTAMP="$BITBUCKET_BUILD_NUMBER"
+          - export IMAGE_NAME=$IMAGENAME          
+          - export TAG="$TIMESTAMP"
+          - docker build -t $IMAGE_NAME:$TAG .
+          - pipe: atlassian/aws-ecr-push-image:2.4.0
+            variables:
+              AWS_DEFAULT_REGION: $REGION
+              IMAGE_NAME: $IMAGE_NAME
+              TAGS: '$TAG'
+              AWS_OIDC_ROLE_ARN: $ARN
